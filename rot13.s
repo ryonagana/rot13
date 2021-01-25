@@ -1,4 +1,4 @@
-	.file	"rot.cc"
+	.file	"rot13.c"
 	.intel_syntax noprefix
 	.text
 	.section	.rodata.str1.1,"aMS",@progbits,1
@@ -7,10 +7,10 @@
 .LC1:
 	.string	"%s\n"
 	.text
-	.globl	_Z5rot13Pc
-	.type	_Z5rot13Pc, @function
-_Z5rot13Pc:
-.LFB29:
+	.globl	rot13
+	.type	rot13, @function
+rot13:
+.LFB6:
 	.cfi_startproc
 	push	r12
 	.cfi_def_cfa_offset 16
@@ -29,10 +29,10 @@ _Z5rot13Pc:
 	dec	eax
 	cdqe
 	mov	BYTE PTR [r12+1+rax], 0
-.L8:
+.L3:
 	mov	al, BYTE PTR [rdx]
 	test	al, al
-	je	.L3
+	je	.L14
 	lea	ecx, [rax-97]
 	cmp	cl, 13
 	jbe	.L12
@@ -55,26 +55,25 @@ _Z5rot13Pc:
 	mov	BYTE PTR [rdx], al
 .L5:
 	inc	rdx
-	jmp	.L8
-.L3:
+	jmp	.L3
+.L14:
 	mov	rdi, QWORD PTR stdout[rip]
 	mov	rdx, r12
 	mov	esi, OFFSET FLAT:.LC1
-	xor	eax, eax
 	pop	r12
 	.cfi_def_cfa_offset 8
 	jmp	fprintf
 	.cfi_endproc
-.LFE29:
-	.size	_Z5rot13Pc, .-_Z5rot13Pc
+.LFE6:
+	.size	rot13, .-rot13
 	.section	.rodata.str1.1
 .LC2:
 	.string	" "
 	.text
-	.globl	_Z12process_argsiPPcS_
-	.type	_Z12process_argsiPPcS_, @function
-_Z12process_argsiPPcS_:
-.LFB30:
+	.globl	process_args
+	.type	process_args, @function
+process_args:
+.LFB7:
 	.cfi_startproc
 	push	r14
 	.cfi_def_cfa_offset 16
@@ -96,27 +95,43 @@ _Z12process_argsiPPcS_:
 	mov	rax, QWORD PTR [rsi]
 	mov	rbx, rsi
 	cmp	BYTE PTR [rax], 45
-	jne	.L15
+	jne	.L16
 	mov	rax, QWORD PTR [rsi+8]
 	cmp	BYTE PTR [rax], 45
-	jne	.L15
+	jne	.L16
 	mov	rax, QWORD PTR [rsi+16]
 	cmp	BYTE PTR [rax], 100
-	jne	.L15
+	jne	.L16
 	mov	DWORD PTR debug_mode[rip], 1
 	mov	DWORD PTR has_args[rip], 1
-.L15:
+.L16:
 	cmp	DWORD PTR has_args[rip], 0
-	jne	.L19
+	mov	r12d, 2
+	jne	.L18
 	xor	r12d, r12d
-.L18:
+.L17:
 	inc	r12
 	cmp	r13d, r12d
-	jle	.L14
+	jle	.L15
 	mov	esi, OFFSET FLAT:.LC2
 	mov	rdi, rbp
 	call	strcat
 	mov	r14, QWORD PTR [rbx+r12*8]
+	mov	rdi, r14
+	call	strlen
+	mov	rsi, r14
+	mov	rdi, rbp
+	mov	rdx, rax
+	call	strncat
+	jmp	.L17
+.L18:
+	cmp	r13d, r12d
+	jle	.L15
+	mov	esi, OFFSET FLAT:.LC2
+	mov	rdi, rbp
+	call	strcat
+	mov	r14, QWORD PTR [rbx+r12*8]
+	inc	r12
 	mov	rdi, r14
 	call	strlen
 	mov	rsi, r14
@@ -124,24 +139,7 @@ _Z12process_argsiPPcS_:
 	mov	rdx, rax
 	call	strncat
 	jmp	.L18
-.L19:
-	mov	r12d, 2
-.L16:
-	cmp	r13d, r12d
-	jle	.L14
-	mov	esi, OFFSET FLAT:.LC2
-	mov	rdi, rbp
-	call	strcat
-	mov	r14, QWORD PTR [rbx+r12*8]
-	inc	r12
-	mov	rdi, r14
-	call	strlen
-	mov	rsi, r14
-	mov	rdi, rbp
-	mov	rdx, rax
-	call	strncat
-	jmp	.L16
-.L14:
+.L15:
 	pop	rbx
 	.cfi_def_cfa_offset 40
 	pop	rbp
@@ -154,12 +152,12 @@ _Z12process_argsiPPcS_:
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE30:
-	.size	_Z12process_argsiPPcS_, .-_Z12process_argsiPPcS_
-	.globl	_Z10read_inputPc
-	.type	_Z10read_inputPc, @function
-_Z10read_inputPc:
-.LFB31:
+.LFE7:
+	.size	process_args, .-process_args
+	.globl	read_input
+	.type	read_input, @function
+read_input:
+.LFB8:
 	.cfi_startproc
 	push	rbp
 	.cfi_def_cfa_offset 16
@@ -172,13 +170,13 @@ _Z10read_inputPc:
 	.cfi_def_cfa_offset 48
 	mov	QWORD PTR [rsp], 0
 	mov	QWORD PTR [rsp+8], 0
-.L23:
+.L25:
 	mov	rdx, QWORD PTR stdin[rip]
 	lea	rsi, [rsp+8]
 	mov	rdi, rsp
 	call	getline
 	inc	rax
-	je	.L21
+	je	.L28
 	mov	esi, OFFSET FLAT:.LC2
 	mov	rdi, rbx
 	call	strcat
@@ -191,8 +189,8 @@ _Z10read_inputPc:
 	call	strncat
 	mov	rdi, rbp
 	call	free
-	jmp	.L23
-.L21:
+	jmp	.L25
+.L28:
 	add	rsp, 24
 	.cfi_def_cfa_offset 24
 	pop	rbx
@@ -201,8 +199,8 @@ _Z10read_inputPc:
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE31:
-	.size	_Z10read_inputPc, .-_Z10read_inputPc
+.LFE8:
+	.size	read_input, .-read_input
 	.section	.rodata.str1.1
 .LC3:
 	.string	"DEBUG"
@@ -210,7 +208,7 @@ _Z10read_inputPc:
 	.globl	main
 	.type	main, @function
 main:
-.LFB32:
+.LFB9:
 	.cfi_startproc
 	sub	rsp, 2056
 	.cfi_def_cfa_offset 2064
@@ -222,36 +220,36 @@ main:
 	movups	XMMWORD PTR [rsp], xmm0
 	rep stosd
 	cmp	r8d, 1
-	jle	.L26
+	jle	.L30
 	mov	rdx, rsp
 	mov	edi, r8d
-	call	_Z12process_argsiPPcS_
+	call	process_args
 	cmp	DWORD PTR has_args[rip], 0
-	je	.L27
+	je	.L31
 	cmp	DWORD PTR debug_mode[rip], 0
-	je	.L27
+	je	.L31
 	mov	edi, OFFSET FLAT:.LC3
 	xor	eax, eax
 	call	printf
 	mov	rsi, QWORD PTR stdout[rip]
 	mov	rdi, rsp
 	call	fputs
-.L27:
+.L31:
 	mov	rdi, rsp
-	call	_Z5rot13Pc
+	call	rot13
 	xor	edi, edi
 	call	exit
-.L26:
+.L30:
 	mov	rdi, rsp
-	call	_Z10read_inputPc
+	call	read_input
 	mov	rdi, rsp
-	call	_Z5rot13Pc
+	call	rot13
 	xor	eax, eax
 	add	rsp, 2056
 	.cfi_def_cfa_offset 8
 	ret
 	.cfi_endproc
-.LFE32:
+.LFE9:
 	.size	main, .-main
 	.globl	has_args
 	.bss
