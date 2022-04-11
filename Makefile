@@ -1,5 +1,5 @@
 CC=cc
-CFLAGS=-Wall -Wextra -pedantic -Os
+CFLAGS=-Wall -Wextra -pedantic -O2 -Werror
 
 
 all:

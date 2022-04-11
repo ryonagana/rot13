@@ -6,7 +6,7 @@
 
 int debug_mode = 0;
 int has_args = 0;
-
+#define UNUSED_VAR(x) ((void)x)
 void rot13(char *str){
     int i;
     
@@ -58,13 +58,15 @@ void process_args(int v_argc, char *v_argv[], char *out ){
     if(!has_args){
         for(i = 1; i < v_argc; i++){
             strncat(out, " ", 2);
-            strncat(out, v_argv[i], strlen(v_argv[i]));
+	    int len = strnlen(v_argv[i],255)-1;
+            strncat(out, v_argv[i], len);
         }
     }else {
 
         for(i = 2; i < v_argc; i++){
-             strncat(out, " ", 2);
-             strncat(out, v_argv[i], strlen(v_argv[i]));
+            int len = strnlen(v_argv[i],255)-1; 
+            strncat(out, " ", 2);
+            strncat(out, v_argv[i], len);
          }
     }
 
@@ -75,24 +77,32 @@ void process_args(int v_argc, char *v_argv[], char *out ){
 void read_input(char *out){
     
     char *buf = NULL;
-    size_t read = 0;
+    int read = 0;
     size_t len = 0;
 
-    while((read = getline(&buf, &len, stdin)) != -1 ){
+    while((read = getline(&buf, &len, stdin)) != EOF ){
         strncat(out, " ", 2);
-        strncat(out, buf, strlen(buf));
+	int len = strnlen(buf,255)-1;
+        strncat(out, buf, strnlen(buf,len));
         free(buf);   
     } 
  
 }
 
-
+void help(){
+	
+	fprintf(stdout, "USAGE:\n");
+	fprintf(stdout, "echo \"YOUR MESSAGE!!\" | [rot13|./rot13]\n\n");
+	exit(0);
+}
 int main(int argc,  char *argv[]){
     
     char tmp[2048] = {0};
-
+    UNUSED_VAR(argv);
     if(argc > 1){
-        process_args(argc, argv, tmp);
+	help();
+        /*
+	process_args(argc, argv, tmp);
         if(has_args && debug_mode){
             printf("DEBUG");
             fprintf(stdout, "%s", tmp);
@@ -101,10 +111,11 @@ int main(int argc,  char *argv[]){
         //process_args(argc, argv, tmp);
         rot13(tmp);
         exit(0);
+	*/
     }
 
     read_input(tmp);
     rot13(tmp);
-
+    //help();
     return 0;
 }
