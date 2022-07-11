@@ -1,3 +1,5 @@
 rot13
 *.o
 *.s
+.txt
+*.txt
