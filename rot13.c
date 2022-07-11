@@ -9,6 +9,9 @@
 
 #define UNUSED_VAR(x) ((void)x)
 
+
+#define TEXT_LIMIT_SIZE (8*1024)
+
 int rot13basis(int c, int basis);
 int rot13(int c);
 
@@ -53,8 +56,9 @@ void convert_rot13(char* s){
 
 
     char *out = NULL;
-    out = malloc(255+1);
-    memset(out,0,255);
+    int len = strnlen(s,TEXT_LIMIT_SIZE);
+    out = malloc(len+1);
+    memset(out,0,len+1);
 
 
     while(s++ != NULL && *s != '\0' &&  *s != EOF){
@@ -64,6 +68,7 @@ void convert_rot13(char* s){
 
 
     fprintf(stdout,"%s\n",out);
+    fprintf(stdout, "Length: %d\n", len+1);
     free(out);
 
 }
@@ -84,9 +89,7 @@ int main(int argc,  char *argv[]){
     }
 
     char *text = NULL;
-
-    text = malloc(255);
-
+    text = malloc(TEXT_LIMIT_SIZE);
     read_input(text);
     //fprintf(stdout, "Original Text: %s\n", text);
     convert_rot13(text);
