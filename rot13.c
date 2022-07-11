@@ -27,8 +27,7 @@ int rot13(int c){
 }
 
 int rot13basis(int c, int basis){
-    c = (((c-basis)+13)%26)+basis;
-    return c;
+    return (((c-basis)+13)%26)+basis;
 }
 
 
