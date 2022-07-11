@@ -6,11 +6,7 @@ example:
 foo@bar:~$ echo  foo bar | rot13
 sbb one
 ```
-or 
 
-```console
-foo@bar:~$ ./rot13 foo bar
-sbb one
-```
+![Rot13 in Action!](rot13.png)
 
 
