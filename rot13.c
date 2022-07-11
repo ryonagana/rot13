@@ -1,77 +1,35 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <errno.h>
 
 
 
-int debug_mode = 0;
-int has_args = 0;
 #define UNUSED_VAR(x) ((void)x)
-void rot13(char *str){
-    int i;
-    
 
-    if(!str){
-        fprintf(stderr, "Invalid String");
-        exit(1);
+int rot13basis(int c, int basis);
+int rot13(int c);
+
+int rot13(int c){
+
+    if('a' <= c && c <= 'z'){
+            return rot13basis(c,'a');
+    }else if('A' <= c && c <='Z'){
+            return rot13basis(c,'A');
     }
 
-    int len = strlen(str) - 1;
-    
-    //set \0 in the end of string
-    *(str + len + 1) = '\0';
+    return c;
+}
 
-    for(i = 0; str[i] != '\0'; i++){
-
-
-        if( str[i] >= 'a' && str[i] <= 'n') { str[i] += 13; continue; }
-        if( str[i] >= 'A' && str[i] <= 'N') { str[i] += 13; continue; }
-        if( str[i] >= 'N' && str[i] <= 'Z') { str[i] -= 13; continue; }
-        if( str[i] >= 'n' && str[i] <= 'z') { str[i] -= 13; continue; }
-        
-
-    }
-
-
-    fprintf(stdout, "%s\n",str);
-
+int rot13basis(int c, int basis){
+    c = (((c-basis)+13)%26)+basis;
+    return c;
 }
 
 
-void process_args(int v_argc, char *v_argv[], char *out ){
-    
-    int i;
-    
-    switch(*v_argv[0]){
-        case '-':{
 
-                     if(*v_argv[1] == '-' && *v_argv[2] == 'd'  ){
-                        debug_mode = 1;
-                        has_args = 1;
-                     }
-
-                 }
-        break;
-
-    }
-    
-    if(!has_args){
-        for(i = 1; i < v_argc; i++){
-            strncat(out, " ", 2);
-	    int len = strnlen(v_argv[i],255)-1;
-            strncat(out, v_argv[i], len);
-        }
-    }else {
-
-        for(i = 2; i < v_argc; i++){
-            int len = strnlen(v_argv[i],255)-1; 
-            strncat(out, " ", 2);
-            strncat(out, v_argv[i], len);
-         }
-    }
-
-    
-}
 
 
 void read_input(char *out){
@@ -82,40 +40,59 @@ void read_input(char *out){
 
     while((read = getline(&buf, &len, stdin)) != EOF ){
         strncat(out, " ", 2);
-	int len = strnlen(buf,255)-1;
+        int len = strnlen(buf,255)-1;
         strncat(out, buf, strnlen(buf,len));
-        free(buf);   
     } 
+
+
+    free(buf);
  
+}
+
+void convert_rot13(char* s){
+
+
+    char *out = NULL;
+    out = malloc(255+1);
+    memset(out,0,255);
+
+
+    while(s++ != NULL && *s != '\0' &&  *s != EOF){
+        char c = rot13(*s);
+        strncat(out, &c, 1);
+    }
+
+
+    fprintf(stdout,"%s\n",out);
+    free(out);
+
 }
 
 void help(){
 	
 	fprintf(stdout, "USAGE:\n");
-	fprintf(stdout, "echo \"YOUR MESSAGE!!\" | [rot13|./rot13]\n\n");
+	fprintf(stdout, "echo \"Text Here\" | [rot13|./rot13]\n\n");
 	exit(0);
 }
 int main(int argc,  char *argv[]){
-    
-    char tmp[2048] = {0};
+ 	
+    UNUSED_VAR(argc);
     UNUSED_VAR(argv);
-    if(argc > 1){
-	help();
-        /*
-	process_args(argc, argv, tmp);
-        if(has_args && debug_mode){
-            printf("DEBUG");
-            fprintf(stdout, "%s", tmp);
-        }      
 
-        //process_args(argc, argv, tmp);
-        rot13(tmp);
-        exit(0);
-	*/
+    if(argc > 1){
+        help();
     }
 
-    read_input(tmp);
-    rot13(tmp);
-    //help();
+    char *text = NULL;
+
+    text = malloc(255);
+
+    read_input(text);
+    //fprintf(stdout, "Original Text: %s\n", text);
+    convert_rot13(text);
+    free(text);
+
+
+
     return 0;
 }
